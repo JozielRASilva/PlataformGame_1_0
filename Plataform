@@ -1,0 +1,138 @@
+class Plataform {
+
+  // Localização em X
+  float x;
+
+  // Localização em Y
+  float y;
+
+  // Comprimento em X
+  float cx;
+
+  // Comprimento em Y do retângulo maior
+  float cy;
+
+  // Comprimento em  Y do retângulo menor
+  float cy2;
+
+  // Movimento
+
+  boolean right = false;
+  boolean left = false;
+  boolean up = false;
+  boolean down = false;
+
+
+  Plataform(float x1, float y1, float cx1, float cy1, float cy3) {
+    x = x1;
+    y = y1;
+    cx = cx1;
+    cy = cy1;
+    cy2 = cy3;
+  }
+
+  void design() {
+    noStroke();
+    rectMode(CENTER);
+
+    // Retângulo Largo (Terra)
+
+    fill(100, 50, 0);
+    rect(x, y, cx, cy);
+
+    // Retângulo Estreito (Grama)
+
+    fill(100, 200, 0);
+    rect(x, y - (cy/2) + (cy2/2) , cx, cy2);
+  }
+
+  void overlaps (Plataform other) {
+
+    if (x + (cx/2) > other.x - (other.cx/2) 
+      && x - (cx/2) < other.x + (other.cx/2)
+      && y + (cy/2) > other. y - (other.cy/2) 
+      && y - (cy/2) < other. y + (other.cy/2)) {
+
+      float angulo_I = abs(degrees(atan((-other.cy/2)/(other.cx/2))));
+      println("I quadrante Angulo: " + angulo_I);
+
+      float angulo_II = abs(degrees(atan((-other.cy/2)/(-other.cx/2)))-180);
+      println("II quadrante Angulo: " + angulo_II);
+
+      float angulo_III = abs(degrees(atan((other.cy/2)/(-other.cx/2))))+180;
+      println("III quadrante Angulo: " + angulo_III);
+
+      float angulo_IV = abs(degrees(atan((other.cy/2)/(other.cx/2)))-360);
+      println("IV quadrante Angulo: " + angulo_IV);
+
+      float toque = abs(degrees(atan((other.y - y)/(other.x - x))));
+
+      if (x < other.x && y < other.y) {
+        toque = abs(toque-180);
+      } else if (x < other.x && y > other.y) {
+        toque = toque + 180;
+      } else if (x > other.x && y > other.y) {
+        toque = abs(toque-360);
+      }
+
+      println("Angulo do centro: ", toque);
+
+
+      // Conlisões Com problemas
+
+      // Esquerda
+      if (x + (cx/2) < other.x && (toque >= angulo_II && toque <= angulo_III || toque == 0)) { 
+        x -= 4;
+        println("Esquerda");
+      }
+
+      // Direita
+      if (x - (cx/2) > other.x && (toque <= angulo_I || toque >= angulo_IV || toque == 0)) {
+        x += 4;
+        println("Direita");
+      }
+
+      // Baixo
+      if (y - (cy/2) > other.y && (toque <= angulo_IV && toque >= angulo_III || toque == 90)) {
+        y += 4;
+        println("Baixo");
+      }
+
+      //Cima
+      if (y + (cy/2) < other.y && (toque <= angulo_II && toque >= angulo_I  || toque == 90)) {
+        y -= 4;
+        println("Cima");
+      }
+
+
+
+
+
+      println("tocou");
+    }
+  }
+
+
+  // Controles
+
+  void isPressed() {
+    if (keyCode == LEFT) left = true;
+    if (keyCode == RIGHT) right = true;
+    if (keyCode == UP) up = true;
+    if (keyCode == DOWN) down = true;
+  }
+
+  void notPressed() {
+    if (keyCode == LEFT) left = false;
+    if (keyCode == RIGHT) right = false;
+    if (keyCode == UP) up = false;
+    if (keyCode == DOWN) down = false;
+  }
+
+  void Move() {
+    if (left) x -= 4;
+    if (right) x += 4;
+    if (up) y -= 4;
+    if (down) y += 4;
+  }
+}
