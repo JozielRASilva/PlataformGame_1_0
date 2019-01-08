@@ -1,0 +1,141 @@
+class Player {
+
+  // Localização do jogador 
+  float x;
+  float y;
+
+  // Comprimento em X
+  float cx;
+
+  // Comprimento em Y do retângulo maior
+  float cy;
+
+  // Movimento
+
+  boolean right = false;
+  boolean left = false;
+  boolean up = false;
+  boolean down = false;
+
+  // Pulo
+
+  boolean jump = false;
+
+  // Velocidade de queda em Y
+
+  float vY = 0;
+  
+  // Jogador em queda Livre
+  
+  boolean freeFall = true;
+  
+  // Construtor
+
+  Player(float x1, float y1, float cx1, float cy1) {
+    x = x1;
+    y = y1;
+    cx = cx1;
+    cy = cy1;
+  }
+
+  void design() {
+    rectMode(CENTER);
+    fill(0, 100, 100);
+    rect(x, y, cx, cy);
+  }
+
+  // Controles
+
+  void isPressed() {
+    if (keyCode == LEFT) left = true;
+    if (keyCode == RIGHT) right = true;
+    if (keyCode == UP) up = true;
+    if (keyCode == DOWN) down = true;
+  }
+
+  void notPressed() {
+    if (keyCode == LEFT) left = false;
+    if (keyCode == RIGHT) right = false;
+    if (keyCode == UP) up = false;
+    if (keyCode == DOWN) down = false;
+  }
+
+  // Movimento
+
+  void actionPlayer() {
+    if (left) x -= 4;
+    if (right) x += 4;
+
+    if (up && !jump) { 
+      vY -= 5; 
+      jump = true;
+    }
+
+    println("Jump: ", jump, "\nFreeFall: ", freeFall);
+
+    isJump();
+    freeFall = true;
+
+    // Gravidade
+    if (freeFall) {
+      vY += g;
+    }
+    y += vY;
+  }
+
+  void isJump() {
+    if (!freeFall) jump = false;
+  }
+
+
+  // Colisão
+
+  void overlaps (Plataform other) {
+
+    if (x + (cx/2) > other.x - (other.cx/2) 
+      && x - (cx/2) < other.x + (other.cx/2)
+      && y + (cy/2) > other. y - (other.cy/2) 
+      && y - (cy/2) < other. y + (other.cy/2)) {
+        
+    float angulo_I = abs(degrees(atan((-other.cy/2)/(other.cx/2))));
+    //println("I quadrante Angulo: " + angulo_I);
+
+    float angulo_II = abs(degrees(atan((-other.cy/2)/(-other.cx/2)))-180);
+    //println("II quadrante Angulo: " + angulo_II);
+
+    float angulo_III = abs(degrees(atan((other.cy/2)/(-other.cx/2))))+180;
+    //println("III quadrante Angulo: " + angulo_III);
+
+    float angulo_IV = abs(degrees(atan((other.cy/2)/(other.cx/2)))-360);
+    //println("IV quadrante Angulo: " + angulo_IV);
+
+    float toque = abs(degrees(atan((other.y - y)/(other.x - x))));
+
+    if (x < other.x && y < other.y) {
+      toque = abs(toque-180);
+    } else if (x < other.x && y > other.y) {
+      toque = toque + 180;
+    } else if (x > other.x && y > other.y) {
+      toque = abs(toque-360);
+    }
+
+    
+    println(vY);
+
+      
+    // Esquerda
+    if (x + (cx/2) < other.x && (toque >= angulo_II && toque <= angulo_III || toque == 0)) { x -= 4;}
+      
+    // Direita
+    if (x - (cx/2) > other.x && (toque <= angulo_I || toque >= angulo_IV || toque == 0)) {x += 4;}
+      
+    // Baixo
+    if (y - (cy/2) > other.y && (toque <= angulo_IV && toque >= angulo_III || toque == 90)) {y += 4;}
+      
+    //Cima
+    if (y + (cy/2) < other.y && (toque <= angulo_II && toque >= angulo_I  || toque == 90)) { y -= vY;vY = 0; y = other.y - (other.cy/2) - (cy/2) ; freeFall = false;}
+
+    
+    }
+  }
+}
