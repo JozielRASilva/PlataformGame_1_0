@@ -1,0 +1,40 @@
+Plataform plat;
+Plataform plat2;
+Plataform plat3;
+Player player;
+
+// Gravidade
+
+float g = 0.4;
+
+void setup() {
+  size(640, 320);
+  player = new Player(width/2, 100, 20, 80);
+  plat = new Plataform(width/2, 300, 1250, 100, 10);
+  plat2 = new Plataform(width/2+100, 200, 100, 100, 10);
+  plat3 = new Plataform(width/2-100, 160, 100, 50, 10);
+}
+
+void draw() {
+  background(70, 100, 190);
+
+  plat.design();
+  plat2.design();
+  plat3.design();
+  player.design();
+
+  player.actionPlayer();
+
+  // Colisão 
+  player.overlaps(plat3);
+  player.overlaps(plat2);
+  player.overlaps(plat);
+}
+
+void keyPressed() {
+  player.isPressed();
+}
+
+void keyReleased() {
+  player.notPressed();
+}
